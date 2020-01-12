@@ -5,11 +5,10 @@ import 'rest.dart';
 void main() => runApp(PhilipsHue());
 
 class PhilipsHue extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Philips Hue Notifier',
       theme: ThemeData(
         primarySwatch: Colors.red,
       ),
@@ -28,15 +27,16 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreen extends State<HomeScreen> {
-  String _user;
-  bool isNewUSer;
-  Future<IPResponse> ip;
+  String ip;
+  String internalipaddress;
+  IPResponse ipDetails;
   Future<GetUserId> username;
+  bool isNewUser;
 
   @override
   void initState() {
     super.initState();
-    Future<bool> isNewUSer = _getPrefs();
+    _getPrefs();
   }
 
   Future<bool> _getPrefs() async {
@@ -46,9 +46,10 @@ class _HomeScreen extends State<HomeScreen> {
 
   void _setUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    ipDetails = await fetchIp();
     setState(() {
-      ip = fetchIp();
-      // username = getUser(ip);
+      internalipaddress = ipDetails.internalipaddress;
+      ip = ipDetails.id;
     });
     prefs.setString('user', username.toString());
   }
@@ -64,10 +65,10 @@ class _HomeScreen extends State<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              'Press the button and on Bridge',
+              '$internalipaddress',
             ),
             Text(
-              '$isNewUSer',
+              '$ip',
               style: Theme.of(context).textTheme.display1,
             ),
           ],

@@ -20,8 +20,7 @@ Future<IPResponse> fetchIp() async {
   await http.get('https://discovery.meethue.com/');
 
   if (response.statusCode == 200) {
-    String ip = IPResponse.fromJson(json.decode(response.body)).internalipaddress;
-    getUser(ip);
+    return IPResponse.fromJson(json.decode(response.body));
   } else {
     throw Exception('Failed to load post');
   }
@@ -39,14 +38,14 @@ class GetUserId {
   }
 }
 
-Future<GetUserId> getUser(ip) async {
-  String t = ip.toString();
-  print('https://' + t + '/api');
+void getUser(ip) async {
   final response =
-  await http.post('https://' + t + '/api', body: {"devicetype":"my_hue_app#iphone peter"});
+  await http.post('http://'+ip+'/api', body: '{"devicetype":"my_hue_app#iphone peter"}');
 
   if (response.statusCode == 200) {
-    return GetUserId.fromJson(json.decode(response.body));
+    var res = json.decode(response.body);
+    return res[0]['error']['type'];
+    // return GetUserId.fromJson(json.decode(response.body));
   } else {
     throw Exception('Failed to load post');
   }
